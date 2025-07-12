@@ -61,7 +61,7 @@ python main.py
 
 ### 🔧 Backend Features
 - **REST API**: Articles and categories management
-- **SOAP Web Services**: User management and authentication
+- **SOAP Web Services**: Modular user management and authentication
 - **JWT Authentication**: Secure token-based authentication
 - **Role-Based Security**: ADMIN, EDITOR, and VISITOR roles
 - **Database Integration**: MySQL with JPA/Hibernate
@@ -108,7 +108,15 @@ actu/
 │   ├── package.json
 │   └── README.md
 ├── backend/                # Spring Boot backend
-│   ├── src/
+│   ├── src/main/java/com/actu/backend/
+│   │   ├── soap/          # SOAP Web Services
+│   │   │   ├── UserEndpoint.java      # User management (125 lines)
+│   │   │   ├── TokenEndpoint.java     # Token management (180 lines)
+│   │   │   ├── AuthEndpoint.java      # Authentication (120 lines)
+│   │   │   └── UserMapper.java        # Data mapping utilities (70 lines)
+│   │   ├── model/         # Domain entities
+│   │   ├── repository/    # Data access layer
+│   │   └── security/      # JWT and security
 │   ├── pom.xml
 │   └── README.md
 ├── client/                 # Python CLI client
@@ -141,8 +149,37 @@ actu/
 - `GET /api/categories` - Get all categories
 
 ### SOAP Web Services (Backend)
-- `/ws/users` - User management operations
-- `/ws/tokens` - Token management operations
+The SOAP services are organized into focused, single-responsibility endpoints:
+
+#### UserEndpoint (`/ws/users`)
+- `getAllUsersRequest` - List all users (Admin only)
+- `getUserRequest` - Get user by ID (Admin only)
+- `createUserRequest` - Create new user (Admin only)
+- `updateUserRequest` - Update existing user (Admin only)
+- `deleteUserRequest` - Delete user (Admin only)
+- `getProfileRequest` - Get user profile (User)
+- `updateProfileRequest` - Update user profile (User)
+
+#### TokenEndpoint (`/ws/users`)
+- `getAllTokensRequest` - List all tokens (Admin only)
+- `generateTokenRequest` - Generate token for user (Admin only)
+- `deleteTokenRequest` - Delete token (Admin only)
+- `getTokensByUserRequest` - Get tokens by user ID (Admin only)
+- `reactivateTokenRequest` - Reactivate revoked token (Admin only)
+- `revokeTokenRequest` - Revoke active token (Admin only)
+
+#### AuthEndpoint (`/ws/users`)
+- `loginRequest` - User authentication
+- `registerRequest` - User registration
+- `getCurrentUserRequest` - Get current user info
+- `logoutRequest` - User logout
+
+#### Architecture Benefits
+- **Single Responsibility**: Each endpoint handles one domain area
+- **Maintainability**: Easier to find and modify specific functionality
+- **Testability**: Each endpoint can be tested independently
+- **Code Reuse**: Centralized `UserMapper` for consistent data transformation
+- **Scalability**: New endpoints can be added without affecting existing ones
 
 ## 🗄️ Database Schema
 

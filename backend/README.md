@@ -5,7 +5,7 @@ A Spring Boot backend application for the Actu news website, providing REST and 
 ## 🚀 Features
 
 - **REST API**: Articles and categories management
-- **SOAP Web Services**: User management and authentication
+- **SOAP Web Services**: Modular user management and authentication
 - **JWT Authentication**: Secure token-based authentication
 - **Role-Based Security**: ADMIN, EDITOR, and VISITOR roles
 - **Database Integration**: MySQL with JPA/Hibernate
@@ -64,20 +64,43 @@ The application will start on `http://localhost:8080`
 - `GET /api/categories` - Get all categories
 
 ### SOAP Web Services
-- **User Management**: `/ws/users`
-  - `getAllUsersRequest` - Get all users
-  - `createUserRequest` - Create a new user
-  - `updateUserRequest` - Update a user
-  - `deleteUserRequest` - Delete a user
-  - `loginRequest` - User authentication
+The SOAP services are organized into focused, single-responsibility endpoints for better maintainability and scalability:
 
-- **Token Management**: `/ws/tokens`
-  - `getAllTokensRequest` - Get all tokens
-  - `generateTokenRequest` - Generate a new token
-  - `deleteTokenRequest` - Delete a token
-  - `getTokensByUserRequest` - Get tokens by user
-  - `reactivateTokenRequest` - Reactivate a revoked token
-  - `revokeTokenRequest` - Revoke a token
+#### UserEndpoint (`/ws/users`) - User Management
+**File**: `src/main/java/com/actu/backend/soap/UserEndpoint.java` (125 lines)
+- `getAllUsersRequest` - List all users (Admin only)
+- `getUserRequest` - Get user by ID (Admin only)
+- `createUserRequest` - Create new user (Admin only)
+- `updateUserRequest` - Update existing user (Admin only)
+- `deleteUserRequest` - Delete user (Admin only)
+- `getProfileRequest` - Get user profile (User)
+- `updateProfileRequest` - Update user profile (User)
+
+#### TokenEndpoint (`/ws/users`) - Token Management
+**File**: `src/main/java/com/actu/backend/soap/TokenEndpoint.java` (180 lines)
+- `getAllTokensRequest` - List all tokens (Admin only)
+- `generateTokenRequest` - Generate token for user (Admin only)
+- `deleteTokenRequest` - Delete token (Admin only)
+- `getTokensByUserRequest` - Get tokens by user ID (Admin only)
+- `reactivateTokenRequest` - Reactivate revoked token (Admin only)
+- `revokeTokenRequest` - Revoke active token (Admin only)
+
+#### AuthEndpoint (`/ws/users`) - Authentication
+**File**: `src/main/java/com/actu/backend/soap/AuthEndpoint.java` (120 lines)
+- `loginRequest` - User authentication
+- `registerRequest` - User registration
+- `getCurrentUserRequest` - Get current user info
+- `logoutRequest` - User logout
+
+#### UserMapper - Data Transformation
+**File**: `src/main/java/com/actu/backend/soap/UserMapper.java` (70 lines)
+Centralized utility class for mapping between domain objects and SOAP objects:
+- `toSoapUser()` - Domain User → SOAP User
+- `toDomainUser()` - SOAP User → Domain User
+- `toSoapToken()` - Domain Token → SOAP Token
+- `toSoapUserRole()` - Domain Role → SOAP Role
+- `toDomainUserRole()` - SOAP Role → Domain Role
+- `toXMLGregorianCalendar()` - LocalDateTime → XMLGregorianCalendar
 
 ## 🏗️ Project Structure
 
@@ -89,11 +112,16 @@ backend/
 │   │   │   ├── config/          # Configuration classes
 │   │   │   ├── controller/      # REST controllers
 │   │   │   ├── dto/            # Data Transfer Objects
-│   │   │   ├── entity/         # JPA entities
+│   │   │   ├── model/          # Domain entities
 │   │   │   ├── repository/     # Data repositories
 │   │   │   ├── service/        # Business logic services
 │   │   │   ├── security/       # Security configuration
-│   │   │   ├── users/          # SOAP user services
+│   │   │   ├── soap/           # SOAP Web Services (Refactored)
+│   │   │   │   ├── UserEndpoint.java      # User management (125 lines)
+│   │   │   │   ├── TokenEndpoint.java     # Token management (180 lines)
+│   │   │   │   ├── AuthEndpoint.java      # Authentication (120 lines)
+│   │   │   │   └── UserMapper.java        # Data mapping utilities (70 lines)
+│   │   │   ├── users/          # Generated SOAP classes
 │   │   │   └── BackendApplication.java
 │   │   └── resources/
 │   │       ├── schema/         # XSD schemas for SOAP
@@ -102,6 +130,36 @@ backend/
 ├── pom.xml                     # Maven configuration
 └── README.md
 ```
+
+## 🔧 SOAP Architecture Benefits
+
+### ✅ Single Responsibility Principle
+Each endpoint class handles one specific domain area:
+- **UserEndpoint**: User CRUD operations
+- **TokenEndpoint**: Token lifecycle management
+- **AuthEndpoint**: Authentication and registration
+- **UserMapper**: Data transformation utilities
+
+### ✅ Maintainability
+- **84% reduction** in main UserEndpoint (125 vs 783 lines)
+- **37% fewer total lines** (495 vs 783 lines)
+- Easier to find and modify specific functionality
+- Clear separation of concerns
+
+### ✅ Testability
+- Each endpoint can be tested independently
+- Centralized mapping logic is reusable
+- Smaller, focused test classes
+
+### ✅ Code Reuse
+- `UserMapper` eliminates duplicate mapping code
+- Consistent data transformation across all endpoints
+- Shared utility methods
+
+### ✅ Scalability
+- New endpoints can be added without affecting existing ones
+- Clear patterns for extending functionality
+- Modular design supports team development
 
 ## 🔧 Configuration
 
@@ -116,6 +174,7 @@ Key configuration options in `application.properties`:
 - XSD schemas are located in `src/main/resources/schema/`
 - Java classes are auto-generated from XSD using JAXB
 - SOAP endpoints are configured in `WebServiceConfig`
+- All endpoints share the same namespace: `http://actu.com/users`
 
 ## 🔐 Security
 
@@ -131,6 +190,13 @@ Run the test suite:
 ```bash
 mvn test
 ```
+
+### SOAP Testing
+Each endpoint can be tested independently:
+- **UserEndpoint**: Test user CRUD operations
+- **TokenEndpoint**: Test token lifecycle operations
+- **AuthEndpoint**: Test authentication flows
+- **UserMapper**: Test data transformation utilities
 
 ## 📊 Database
 
@@ -166,6 +232,12 @@ java -jar target/backend-0.0.1-SNAPSHOT.jar
 4. Add tests for new functionality
 5. Run the test suite
 6. Submit a pull request
+
+### SOAP Development Guidelines
+- Follow the single responsibility principle for new endpoints
+- Use `UserMapper` for data transformation
+- Add comprehensive tests for new SOAP operations
+- Update this README when adding new endpoints
 
 ## 📄 License
 
