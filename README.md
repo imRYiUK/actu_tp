@@ -40,7 +40,7 @@ npm run dev
 
 The frontend will be available at `http://localhost:3000`
 
-### 3. Use the Client (Optional)
+### 3. Use the Client
 
 ```bash
 cd client
