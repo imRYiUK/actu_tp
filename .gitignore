@@ -1,0 +1,79 @@
+# IDE and Editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Frontend (Next.js)
+actu-frontend/.next/
+actu-frontend/node_modules/
+actu-frontend/.env.local
+actu-frontend/.env.development.local
+actu-frontend/.env.test.local
+actu-frontend/.env.production.local
+actu-frontend/npm-debug.log*
+actu-frontend/yarn-debug.log*
+actu-frontend/yarn-error.log*
+actu-frontend/.pnpm-debug.log*
+actu-frontend/out/
+actu-frontend/build/
+actu-frontend/dist/
+
+# Backend (Spring Boot)
+backend/.idea/
+backend/target/
+backend/*.log
+backend/logs/
+backend/.mvn/
+backend/mvnw
+backend/mvnw.cmd
+backend/.env
+
+# Client (Python)
+client/venv/
+client/__pycache__/
+client/*.pyc
+client/*.pyo
+client/*.pyd
+client/.Python
+client/env/
+client/ENV/
+client/.env
+client/*.log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Log files
+*.log
+logs/
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Package manager files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml 
